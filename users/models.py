@@ -33,6 +33,8 @@ class Member(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    born_year = models.PositiveIntegerField(null=True)
+    job = models.CharField(null=True)
 
     objects = Manager()
 
