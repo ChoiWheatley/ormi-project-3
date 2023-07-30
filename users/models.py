@@ -34,7 +34,7 @@ class Member(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     born_year = models.PositiveIntegerField(null=True)
-    job = models.CharField(null=True)
+    job = models.CharField(max_length=255, null=True)
 
     objects = Manager()
 
@@ -43,3 +43,9 @@ class Member(AbstractBaseUser):
 
     def __str__(self) -> str:
         return self.nickname
+
+    def has_perm(self, _perm, _obj=None):
+        return True
+    
+    def has_module_perms(self, _app_label):
+        return True

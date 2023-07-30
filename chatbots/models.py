@@ -3,7 +3,7 @@ from django.db import models
 from users.models import Member
 
 
-class Session(models.Model):
+class ChatBot(models.Model):
     timestamp = models.TimeField(auto_now_add=True)
     member = models.ForeignKey(to=Member, on_delete=models.CASCADE)
 
@@ -12,7 +12,7 @@ class Prompt(models.Model):
     prompt = models.CharField(max_length=2047)
     answer = models.TextField(blank=True)
 
-    session = models.ForeignKey(to=Session, on_delete=models.CASCADE)
+    session = models.ForeignKey(to=ChatBot, on_delete=models.CASCADE)
 
 
 class ChatBotConfig(models.Model):
@@ -21,14 +21,14 @@ class ChatBotConfig(models.Model):
     stream = models.BooleanField(default=False)
     max_tokens = models.PositiveIntegerField(default=4096)
 
-    session = models.ForeignKey(to=Session, on_delete=models.CASCADE)
+    session = models.ForeignKey(to=ChatBot, on_delete=models.CASCADE)
 
 
 class ChatBotReply(models.Model):
     prompt_token_usage = models.PositiveIntegerField()
     completion_token_usage = models.PositiveIntegerField()
 
-    session = models.ForeignKey(to=Session, on_delete=models.CASCADE)
+    session = models.ForeignKey(to=ChatBot, on_delete=models.CASCADE)
 
     def total_token_usage(self) -> int:
         return self.prompt_token_usage + self.completion_token_usage
