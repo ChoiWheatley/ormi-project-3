@@ -19,4 +19,4 @@ class Admin(admin.ModelAdmin):
 
 
 admin.site.register(Member, Admin)
-admin.site.unregister(Group)
+# admin.site.unregister(Group)

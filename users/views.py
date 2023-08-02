@@ -1,8 +1,11 @@
-from django.shortcuts import get_object_or_404, render
-from rest_framework import viewsets, views
+from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404, redirect
+from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action, permission_classes
+from rest_framework.permissions import AllowAny
 from users.models import Member
-from users.serializers import MemberSerializer
+from users.serializers import MemberSerializer, SignInSerializer
 
 
 class MemberViewSet(viewsets.ViewSet):
@@ -27,8 +30,16 @@ class MemberViewSet(viewsets.ViewSet):
             return Response(serializer.validated_data)
         return Response(serializer.errors)
 
-
-class MemberLoginView(views.APIView):
-    def post(self, request):
-        serializer = MemberSerializer(data=request.data)
-
+    @action(methods=["post"], detail=True)
+    @permission_classes([AllowAny])
+    def signin(self, request):
+        serializer = SignInSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data["email"]
+            pw = serializer.validated_data["password"]
+            user = authenticate(request, email=email, password=pw)
+            if user is not None:
+                login(request, user)
+                return redirect("/")
+            else:
+                return Response({"message": "login failed"}, status.HTTP_400_BAD_REQUEST)
