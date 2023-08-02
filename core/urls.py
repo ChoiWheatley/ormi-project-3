@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-from users.views import MemberViewSet, ExampleView
+from users.views import MemberViewSet, ExampleView, MemberCreateView
 
 router = DefaultRouter()
 router.register(r"users", MemberViewSet, basename="user")
@@ -31,6 +31,7 @@ router.register(r"users", MemberViewSet, basename="user")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
+    path("api/users/signin/", MemberCreateView.as_view(), name="signin"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

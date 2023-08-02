@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import viewsets, status, views
 from rest_framework.response import Response
-from rest_framework.decorators import action, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -25,7 +24,13 @@ class MemberViewSet(viewsets.ViewSet):
         serializer = MemberSerializer(user)
         return Response(serializer.data)
 
-    def create(self, request):
+
+class MemberCreateView(views.APIView):
+    """separated from MemberViewSet"""
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
         """signup"""
         serializer = MemberSerializer(data=request.data)
         if serializer.is_valid():
