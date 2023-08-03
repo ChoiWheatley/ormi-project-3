@@ -14,7 +14,7 @@ from users.serializers import MemberSerializer, SignInSerializer
 class MemberViewSet(viewsets.ViewSet):
     """test view set example from https://www.django-rest-framework.org/api-guide/viewsets/#example"""
 
-    permission_classes = [AllowAny, IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def list(self, request):
         queryset = Member.objects.all()
@@ -41,7 +41,8 @@ class MemberViewSet(viewsets.ViewSet):
             )
         return Response(member_ser.errors)
 
-    @action(methods=["get"], detail=True, permission_classes=[AllowAny])
+    @action(methods=["get"], detail=False, permission_classes=[AllowAny],
+            url_path="example", url_name="example")
     def example(self, request):
         authenticator = JWTAuthentication()
         response = authenticator.authenticate(request)
