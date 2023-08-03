@@ -1,9 +1,12 @@
+from socket import ALG_OP_DECRYPT
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import viewsets, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import Member
 from users.serializers import MemberSerializer, SignInSerializer
 
@@ -11,7 +14,7 @@ from users.serializers import MemberSerializer, SignInSerializer
 class MemberViewSet(viewsets.ViewSet):
     """test view set example from https://www.django-rest-framework.org/api-guide/viewsets/#example"""
 
-    permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny, IsAuthenticated]
 
     def list(self, request):
         queryset = Member.objects.all()
@@ -24,31 +27,22 @@ class MemberViewSet(viewsets.ViewSet):
         serializer = MemberSerializer(user)
         return Response(serializer.data)
 
+    @action(methods=["post"], detail=False, permission_classes=[AllowAny])
+    def signup(self, request):
+        member_ser = MemberSerializer(data=request.data)
+        if member_ser.is_valid():
+            member_ser.save()
+            refresh = RefreshToken.for_user(member_ser.instance)
+            return Response(
+                {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                }
+            )
+        return Response(member_ser.errors)
 
-class MemberCreateView(views.APIView):
-    """separated from MemberViewSet"""
-
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        """signup"""
-        serializer = MemberSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.validated_data)
-        return Response(serializer.errors)
-
-
-class ExampleView(views.APIView):
-    """
-    sample code from drf documentation
-    ref: https://www.django-rest-framework.org/api-guide/authentication/#setting-the-authentication-scheme
-    """
-
-    # authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, format=None):
+    @action(methods=["get"], detail=True, permission_classes=[AllowAny])
+    def example(self, request):
         authenticator = JWTAuthentication()
         response = authenticator.authenticate(request)
         if response:
