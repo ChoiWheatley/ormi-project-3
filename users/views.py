@@ -1,4 +1,3 @@
-from socket import ALG_OP_DECRYPT
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import viewsets, status, views
 from rest_framework.response import Response
