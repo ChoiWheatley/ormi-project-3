@@ -6,20 +6,15 @@ from users.models import Member
 class ChatBot(models.Model):
     timestamp = models.TimeField(auto_now_add=True)
     member = models.ForeignKey(to=Member, on_delete=models.CASCADE)
+    model = models.CharField(max_length=255, default="gpt-3.5-turbo")
+    temperature = models.DecimalField(max_digits=5, decimal_places=4, default=decimal.Decimal(1.0))
+    stream = models.BooleanField(default=False)
+    max_tokens = models.PositiveIntegerField(default=4096)
 
 
 class Prompt(models.Model):
     prompt = models.CharField(max_length=2047)
     answer = models.TextField(blank=True)
-
-    chatbot = models.ForeignKey(to=ChatBot, on_delete=models.CASCADE)
-
-
-class ChatBotConfig(models.Model):
-    model = models.CharField(max_length=255, default="gpt-3.5-turbo")
-    temperature = models.DecimalField(max_digits=5, decimal_places=4, default=decimal.Decimal(1.0))
-    stream = models.BooleanField(default=False)
-    max_tokens = models.PositiveIntegerField(default=4096)
 
     chatbot = models.ForeignKey(to=ChatBot, on_delete=models.CASCADE)
 

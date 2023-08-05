@@ -9,6 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import Member
 from users.serializers import MemberSerializer, SignInSerializer
 
+authenticator = JWTAuthentication()
+
 
 class MemberViewSet(viewsets.ViewSet):
     """test view set example from https://www.django-rest-framework.org/api-guide/viewsets/#example"""
@@ -40,10 +42,14 @@ class MemberViewSet(viewsets.ViewSet):
             )
         return Response(member_ser.errors)
 
-    @action(methods=["get"], detail=False, permission_classes=[AllowAny],
-            url_path="example", url_name="example")
+    @action(
+        methods=["get"],
+        detail=False,
+        permission_classes=[AllowAny],
+        url_path="example",
+        url_name="example",
+    )
     def example(self, request):
-        authenticator = JWTAuthentication()
         response = authenticator.authenticate(request)
         if response:
             user, token = response
